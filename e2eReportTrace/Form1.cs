@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace e2eReportTrace;
 
@@ -7,6 +8,7 @@ public partial class Form1 : Form
 {
     private HttpListener _listener;
     private const string UrlPrefix = "http://localhost:5000/";
+    private const string appTitle = "Playwright View Trace";
 
     public Form1()
     {
@@ -41,7 +43,18 @@ public partial class Form1 : Form
     private void Form1_DragDrop(object sender, DragEventArgs e)
     {
         var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-        ExtractZip(files);
+        if (files != null)
+        {
+            DeleteWebFiles();
+            ExtractZip(files);
+        }
+    }
+
+    private void DeleteWebFiles()
+    {
+        string wwwrootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
+        if (Directory.Exists(wwwrootPath))
+            Directory.Delete(wwwrootPath, true);
     }
 
     private void ExtractZip(string[] files)
@@ -56,6 +69,17 @@ public partial class Form1 : Form
 
                 ZipFile.ExtractToDirectory(file, wwwrootPath);
                 webView21.CoreWebView2.Reload();
+
+                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file);
+                var testReportName = Regex.Replace(
+                fileNameWithoutExtension,
+                @"-playwright-report \(\d{1,4}\)$",
+                "",
+                RegexOptions.IgnoreCase);
+
+                ActiveForm.Text = $"{appTitle} - {testReportName}";
+
+
             }
         }
     }
@@ -128,6 +152,7 @@ public partial class Form1 : Form
             openFileDialog.Filter = "Zip files (*-report.zip;*-report (*).zip)|*-report.zip;*-report (*).zip|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
+                DeleteWebFiles();
                 ExtractZip(new string[] { openFileDialog.FileName });
             }
         }
