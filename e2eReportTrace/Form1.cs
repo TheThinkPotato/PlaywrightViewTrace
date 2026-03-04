@@ -217,7 +217,7 @@ public partial class Form1 : Form
         aboutForm.Text = "About";
         aboutForm.Size = new Size(320, 160);
         Label aboutLabel = new Label();
-        aboutLabel.Text = $"Playwright Trace Viewer\nVersion {version}\n-------------------------------------\nCreated by Daniel Lopez";
+        aboutLabel.Text = $"Playwright View Trace\nVersion {version}\n-------------------------------------\nCreated by Daniel Lopez";
         aboutLabel.Dock = DockStyle.Fill;
         aboutLabel.TextAlign = ContentAlignment.MiddleCenter;
         aboutForm.Controls.Add(aboutLabel);
