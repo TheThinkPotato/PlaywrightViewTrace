@@ -14,12 +14,24 @@ public partial class Form1 : Form
     {
         InitializeComponent();
 
+        CreateFolderAndBlankHtmkIfNoWebFolder();
+
         this.AllowDrop = true;
         this.DragEnter += Form1_DragEnter;
         this.DragDrop += Form1_DragDrop;
 
         StartServer();
         InitializeWebView();
+    }
+
+    private void CreateFolderAndBlankHtmkIfNoWebFolder()
+    {
+        string wwwrootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
+        if (!Directory.Exists(wwwrootPath))
+        {
+            Directory.CreateDirectory(wwwrootPath);
+            CreatBlankIndexHtml();
+        }
     }
 
     private void InitializeWebView()
@@ -159,7 +171,7 @@ public partial class Form1 : Form
     }
 
     //Create blank index.html file if it doesn't exist to avoid 404 error on initial load
-    private void creatBlankIndexHtml()
+    private void CreatBlankIndexHtml()
     {
         string wwwrootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
         if (!Directory.Exists(wwwrootPath))
@@ -205,7 +217,7 @@ public partial class Form1 : Form
     private void clearTestsToolStripMenuItem_Click(object sender, EventArgs e)
     {
         DeleteWebFiles();
-        creatBlankIndexHtml();
+        CreatBlankIndexHtml();
         webView21.CoreWebView2.Reload();
         ActiveForm.Text = appTitle;
     }
