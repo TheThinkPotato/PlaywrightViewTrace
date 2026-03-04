@@ -9,7 +9,7 @@ public partial class Form1 : Form
     private HttpListener _listener;
     private const string UrlPrefix = "http://localhost:5000/";
     private const string appTitle = "Playwright View Trace";
-
+    private const string version = "1.0";
     public Form1()
     {
         InitializeComponent();
@@ -158,6 +158,18 @@ public partial class Form1 : Form
         }
     }
 
+    //Create blank index.html file if it doesn't exist to avoid 404 error on initial load
+    private void creatBlankIndexHtml()
+    {
+        string wwwrootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
+        if (!Directory.Exists(wwwrootPath))
+            Directory.CreateDirectory(wwwrootPath);
+        string indexPath = Path.Combine(wwwrootPath, "index.html");
+        if (!File.Exists(indexPath))
+            // make backgorund black and text white
+            File.WriteAllText(indexPath, "<html><style> body{color: white; background-color: black;} </style><body><h1>Playwright View Trace</h1><p>Drag and drop a Playwright report zip file or use the File menu to open one.</p></body></html>");
+    }
+
     private void homeToolStripMenuItem_Click(object sender, EventArgs e)
     {
         // goto home page
@@ -188,5 +200,27 @@ public partial class Form1 : Form
     {
         // close the application
         Close();
+    }
+
+    private void clearTestsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        DeleteWebFiles();
+        creatBlankIndexHtml();
+        webView21.CoreWebView2.Reload();
+        ActiveForm.Text = appTitle;
+    }
+
+    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        Form aboutForm = new Form();
+        aboutForm.Icon = this.Icon;
+        aboutForm.Text = "About";
+        aboutForm.Size = new Size(320, 160);
+        Label aboutLabel = new Label();
+        aboutLabel.Text = $"Playwright Trace Viewer\nVersion {version}\n-------------------------------------\nCreated by Daniel Lopez";
+        aboutLabel.Dock = DockStyle.Fill;
+        aboutLabel.TextAlign = ContentAlignment.MiddleCenter;
+        aboutForm.Controls.Add(aboutLabel);
+        aboutForm.ShowDialog();
     }
 }
